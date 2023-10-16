@@ -46,6 +46,13 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void deleteFavourite(value) {
+    if (favorites.contains(value)) {
+      favorites.remove(value);
+    }
+    notifyListeners();
+  }
 }
 
 // This widget is the home page of your application.
@@ -106,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
 class FavouritePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     var appState = context.watch<MyAppState>();
     var favorites = appState.favorites;
 
@@ -124,7 +132,13 @@ class FavouritePage extends StatelessWidget {
         for (var fav in favorites)
           ListTile(
             title: Text(fav.asLowerCase),
-            leading: Icon(Icons.favorite),
+            leading: IconButton(
+              icon: Icon(Icons.delete_outline),
+              color: theme.colorScheme.primary,
+              onPressed: () {
+                appState.deleteFavourite(fav);
+              },
+            ),
           ),
       ],
     );
