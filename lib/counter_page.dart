@@ -7,12 +7,12 @@ void main() {
   runApp(MyApp());
 }
 
+// root of your application.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // root of your application.
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           // This is the theme of your application.
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Color.fromARGB(217, 255, 0, 225)),
         ),
       ),
     );
@@ -66,6 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var colourTheme = Theme.of(context).colorScheme;
+
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -78,6 +81,15 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
+    // The container for the current page, with its background color and subtle switching animation.
+    var mainArea = ColoredBox(
+      color: colourTheme.surfaceVariant,
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 2000),
+        child: page,
+      ),
+    );
+
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         body: Row(
@@ -89,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 NavigationRailDestination(
                     icon: Icon(Icons.home), label: Text("Home")),
                 NavigationRailDestination(
-                    icon: Icon(Icons.favorite), label: Text("Favourites"))
+                    icon: Icon(Icons.favorite), label: Text("Favourites")),
               ],
               selectedIndex: selectedIndex,
               onDestinationSelected: (value) {
@@ -150,6 +162,7 @@ class GeneratorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var current_word = appState.current;
+
     IconData icon;
     if (appState.favorites.contains(current_word)) {
       icon = Icons.favorite;
@@ -161,6 +174,11 @@ class GeneratorPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(
+            flex: 3,
+            child: HistoryListView(),
+          ),
+          SizedBox(height: 10),
           BigCard(current_word: current_word),
           SizedBox(height: 10),
           Row(
@@ -184,9 +202,26 @@ class GeneratorPage extends StatelessWidget {
               ),
             ],
           ),
+          Spacer(flex: 2),
         ],
       ),
     );
+  }
+}
+
+class HistoryListView extends StatefulWidget {
+  const HistoryListView({Key? key}) : super(key: key);
+
+  @override
+  State<HistoryListView> createState() => _HistoryListView();
+}
+
+class _HistoryListView extends State<HistoryListView> {
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<MyAppState>();
+
+    return ShaderMask(shaderCallback: shaderCallback);
   }
 }
 
